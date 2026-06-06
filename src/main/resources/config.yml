@@ -1,0 +1,36 @@
+# MagmaSpawner Configuration
+# Increases Zombified Piglin spawn rate on magma blocks
+
+# Enable or disable the plugin functionality
+enabled: true
+
+# How many Zombified Piglins to try spawning per trigger event
+# Default vanilla is 1, recommended: 2-4
+spawn-count: 3
+
+# Cooldown in ticks between spawns on the same magma block (20 ticks = 1 second)
+# Lower = more frequent spawns. Default: 20 (1 second)
+spawn-cooldown: 20
+
+# Maximum Zombified Piglins allowed within the scan-radius before blocking a spawn
+# Prevents lag from too many entities in one spot
+max-nearby-entities: 12
+
+# Radius (in blocks) to count nearby entities for the cap above
+scan-radius: 10
+
+# Extra random spawn attempts per trigger (adds more variance/excitement)
+# Set to 0 to disable extra attempts
+extra-attempts: 1
+
+# Worlds where MagmaSpawner is active (leave empty for ALL worlds)
+# Example: [ world_nether, custom_nether ]
+active-worlds: []
+
+# Debug mode: logs spawn attempts to console
+debug: false
+
+# Update checker: checks Modrinth for new versions on startup
+# Ops receive an in-game notification on join if an update is found
+# Set to false to disable entirely
+update-checker: true
