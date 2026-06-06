@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import dev.znxki.zNxPiglinRush.ZNxPiglinRush;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,8 +23,12 @@ public class PiglinRushCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
-        if (!sender.hasPermission("znxpiglinrush.admin")) {
+    public boolean onCommand(@NotNull CommandSender sender,
+                             @NotNull Command command,
+                             @NotNull String label,
+                             @NotNull String[] args) {
+
+        if (!sender.hasPermission("piglinrush.admin")) {
             sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
             return true;
         }
@@ -34,6 +39,7 @@ public class PiglinRushCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0].toLowerCase()) {
+
             case "reload" -> {
                 plugin.reloadMagmaConfig();
                 sender.sendMessage(Component.text(
@@ -42,8 +48,10 @@ public class PiglinRushCommand implements CommandExecutor, TabCompleter {
 
             case "info" -> {
                 var cfg = plugin.getMagmaConfig();
+                boolean folia = plugin.getSchedulerAdapter().isFolia();
                 sender.sendMessage(Component.text("--- zNxPiglinRush Info ---", NamedTextColor.GOLD));
                 sender.sendMessage(info("Status", cfg.isEnabled() ? "ENABLED" : "DISABLED"));
+                sender.sendMessage(info("Runtime", folia ? "Folia" : "Spigot/Paper"));
                 sender.sendMessage(info("Spawn count", String.valueOf(cfg.getSpawnCount())));
                 sender.sendMessage(info("Cooldown", cfg.getSpawnCooldown() + " ticks"));
                 sender.sendMessage(info("Max nearby", String.valueOf(cfg.getMaxNearbyEntities())));
@@ -52,13 +60,16 @@ public class PiglinRushCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(info("Active worlds",
                         cfg.getActiveWorlds().isEmpty() ? "ALL" : String.join(", ", cfg.getActiveWorlds())));
                 sender.sendMessage(info("Debug", String.valueOf(cfg.isDebug())));
+                sender.sendMessage(Component.text("  Update: ", NamedTextColor.GRAY)
+                        .append(LegacyComponentSerializer.legacySection()
+                                .deserialize(plugin.getUpdateChecker().getStatusLine())));
             }
 
             case "toggle" -> {
                 boolean current = plugin.getMagmaConfig().isEnabled();
                 sender.sendMessage(Component.text(
                         "[zNxPiglinRush] Currently " + (current ? "ENABLED" : "DISABLED")
-                                + ". Change 'enabled' in config.yml and use /ms reload.",
+                                + ". Edit 'enabled' in config.yml and use /pr reload.",
                         NamedTextColor.YELLOW));
             }
 

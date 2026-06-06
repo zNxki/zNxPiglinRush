@@ -47,8 +47,7 @@ public class UpdateChecker implements Listener {
 
     public void check() {
         if (!plugin.getMagmaConfig().isUpdateChecker()) return;
-
-        CompletableFuture.runAsync(() -> {
+        plugin.getSchedulerAdapter().runAsync(() -> {
             try {
                 fetchLatestVersion();
             } catch (Exception e) {
@@ -96,7 +95,7 @@ public class UpdateChecker implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        plugin.getServer().getScheduler().runTaskLater(plugin,
+        plugin.getSchedulerAdapter().runDelayedGlobal(
                 () -> notifyPlayer(event.getPlayer()), 40L);
     }
 

@@ -5,15 +5,3 @@ api-version: '26.1.2'
 description: Increases Zombified Piglin spawn rate on magma blocks for gold farms
 authors:
   - zNxki_
-
-commands:
-  znxpiglinrush:
-    description: zNxPiglinRush main command
-    usage: "/znxpiglinrush <reload|info|toggle>"
-    aliases: [ piglinrush, pr ]
-    permission: znxpiglinrush.admin
-
-permissions:
-  znxpiglinrush.admin:
-    description: Access to zNxPiglinRush admin commands
-    default: op
