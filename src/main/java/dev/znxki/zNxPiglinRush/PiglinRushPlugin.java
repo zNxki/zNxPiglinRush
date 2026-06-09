@@ -13,7 +13,7 @@ import dev.znxki.zNxPiglinRush.scheduler.SchedulerServiceFactory;
 import dev.znxki.zNxPiglinRush.spawner.loot.LootInjector;
 import dev.znxki.zNxPiglinRush.spawner.registry.SpawnerRegistry;
 import dev.znxki.zNxPiglinRush.stats.SpawnTracker;
-import dev.znxki.zNxPiglinRush.stats.storage.SqliteStorageBackend;
+import dev.znxki.zNxPiglinRush.stats.storage.H2StorageBackend;
 import dev.znxki.zNxPiglinRush.update.UpdateChecker;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -55,7 +55,7 @@ public final class PiglinRushPlugin extends JavaPlugin {
         lootInjector = new LootInjector(this, spawnerRegistry);
         diagnosticsService = new DiagnosticsService(this, spawnTracker);
 
-        storageBackend = new SqliteStorageBackend(this, spawnTracker);
+        storageBackend = new H2StorageBackend(this, spawnTracker);
         storageBackend.open();
 
         var pm = getServer().getPluginManager();
