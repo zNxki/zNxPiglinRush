@@ -1,6 +1,7 @@
 name: zNxPiglinRush
 version: '${project.version}'
 main: dev.znxki.zNxPiglinRush.PiglinRushPlugin
+loader: dev.znxki.zNxPiglinRush.storage.StorageLibraryLoader
 api-version: '26.1.2'
 folia-supported: true
 description: Multi-block Nether spawner framework

@@ -3,6 +3,7 @@ package dev.znxki.zNxPiglinRush.config;
 import dev.znxki.zNxPiglinRush.PiglinRushPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,32 +19,16 @@ import java.util.logging.Level;
  *
  * <h3>Versioning scheme</h3>
  * <ul>
- *   <li><b>Version absent / 1</b> — flat keys ({@code spawn-count},
- *       {@code spawn-cooldown}, …). Migrated to v2 by moving those values
- *       into {@code spawners.magma_block.*}.</li>
- *   <li><b>Version 2</b> — current schema with {@code spawners:} section and
- *       {@code diagnostics:} section. Any missing keys are filled from the
- *       bundled default config.</li>
+ *   <li><b>Version absent / 1</b> — flat keys. Migrated to v2.</li>
+ *   <li><b>Version 2</b> — {@code spawners:} + {@code diagnostics:} section.</li>
+ *   <li><b>Version 3</b> — adds {@code storage:} section (YAML/JSON/H2/MySQL/MariaDB).</li>
  * </ul>
- *
- * <h3>Strategy</h3>
- * <ol>
- *   <li>Read the user's live {@code config.yml} from disk.</li>
- *   <li>Determine its version from {@code config-version}.</li>
- *   <li>If migration is needed, back up the file as
- *       {@code config_backup_<timestamp>.yml}.</li>
- *   <li>Apply only the transformations required for the detected version gap.</li>
- *   <li>Fill any still-missing keys from the bundled default config.</li>
- *   <li>Write the result back to disk and reload into memory.</li>
- * </ol>
- *
- * <p>User values are <em>never</em> overwritten — only missing keys are added.
  */
 public final class ConfigUpdater {
     /**
      * Latest config schema version. Bump this whenever the schema changes.
      */
-    public static final int CURRENT_VERSION = 2;
+    public static final int CURRENT_VERSION = 3;
 
     private static final DateTimeFormatter BACKUP_FMT =
             DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
@@ -51,7 +36,7 @@ public final class ConfigUpdater {
     private final PiglinRushPlugin plugin;
     private final File configFile;
 
-    public ConfigUpdater(PiglinRushPlugin plugin) {
+    public ConfigUpdater(@NonNull PiglinRushPlugin plugin) {
         this.plugin = plugin;
         this.configFile = new File(plugin.getDataFolder(), "config.yml");
     }
@@ -74,6 +59,8 @@ public final class ConfigUpdater {
         backup();
 
         if (version < 2) migrateV1toV2(live);
+        if (version < 3) migrateV2toV3(live);
+
         fillMissingKeys(live);
         live.set("config-version", CURRENT_VERSION);
 
@@ -114,6 +101,21 @@ public final class ConfigUpdater {
         for (String old : new String[]{"spawn-count", "spawn-cooldown", "max-nearby-entities", "scan-radius", "extra-attempts"}) {
             live.set(old, null);
         }
+    }
+
+    /**
+     * v2 → v3: adds the {@code storage:} section with default type H2.
+     */
+    private void migrateV2toV3(FileConfiguration live) {
+        plugin.getLogger().info("[ConfigUpdater] Applying v2 → v3: adding storage section");
+        setIfAbsent(live, "storage.type", "H2");
+        setIfAbsent(live, "storage.database.host", "localhost");
+        setIfAbsent(live, "storage.database.port", 3306);
+        setIfAbsent(live, "storage.database.name", "minecraft");
+        setIfAbsent(live, "storage.database.username", "root");
+        setIfAbsent(live, "storage.database.password", "");
+        setIfAbsent(live, "storage.database.pool-size", 5);
+        setIfAbsent(live, "storage.database.connection-timeout", 5000);
     }
 
     /**

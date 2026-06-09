@@ -1,11 +1,11 @@
 # ╔══════════════════════════════════════════════╗
 # ║          zNxPiglinRush  config.yml           ║
-# ║          config-version: 2                   ║
+# ║          config-version: 3                   ║
 # ╚══════════════════════════════════════════════╝
 
 # Internal version — used by the ConfigUpdater to detect and migrate old configs.
 # DO NOT change this manually.
-config-version: 2
+config-version: 3
 
 # Master switch — disables all spawning without unloading the plugin
 enabled: true
@@ -15,6 +15,32 @@ active-worlds: []
 
 # Debug mode: logs every spawn attempt, cooldown hit and entity cap check
 debug: false
+
+# ─────────────────────────────────────────
+# STORAGE
+# Choose how spawn statistics are persisted.
+#
+# type: one of YAML | JSON | H2 | MYSQL | MARIADB
+#
+#   YAML    — stores stats in stats.yml  (no extra libs)
+#   JSON    — stores stats in stats.json (no extra libs)
+#   H2      — embedded SQL database, file-based (bundled)
+#   MYSQL   — remote MySQL server (downloaded at startup via Paper LibraryLoader)
+#   MARIADB — remote MariaDB server (downloaded at startup via Paper LibraryLoader)
+#
+# The database section is only used when type is MYSQL or MARIADB.
+# ─────────────────────────────────────────
+storage:
+  type: H2
+  database:
+    host: localhost
+    port: 3306
+    name: minecraft
+    username: root
+    password: ""
+    # HikariCP connection pool settings
+    pool-size: 5
+    connection-timeout: 5000
 
 # ─────────────────────────────────────────
 # SPAWNER BLOCKS

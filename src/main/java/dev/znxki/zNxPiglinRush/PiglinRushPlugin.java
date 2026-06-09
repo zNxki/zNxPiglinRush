@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import dev.znxki.zNxPiglinRush.api.scheduler.SchedulerService;
 import dev.znxki.zNxPiglinRush.api.storage.StorageBackend;
 import dev.znxki.zNxPiglinRush.command.PiglinRushCommand;
+import dev.znxki.zNxPiglinRush.config.ConfigUpdater;
 import dev.znxki.zNxPiglinRush.config.PluginConfig;
 import dev.znxki.zNxPiglinRush.diagnostics.DiagnosticsService;
 import dev.znxki.zNxPiglinRush.heatmap.HeatmapService;
@@ -14,6 +15,7 @@ import dev.znxki.zNxPiglinRush.spawner.loot.LootInjector;
 import dev.znxki.zNxPiglinRush.spawner.registry.SpawnerRegistry;
 import dev.znxki.zNxPiglinRush.stats.SpawnTracker;
 import dev.znxki.zNxPiglinRush.stats.storage.H2StorageBackend;
+import dev.znxki.zNxPiglinRush.storage.StorageBackendFactory;
 import dev.znxki.zNxPiglinRush.update.UpdateChecker;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -47,6 +49,8 @@ public final class PiglinRushPlugin extends JavaPlugin {
         instance = this;
         saveDefaultConfig();
 
+        new ConfigUpdater(this).update();
+
         pluginConfig = new PluginConfig(this);
         schedulerService = SchedulerServiceFactory.create(this);
         spawnTracker = new SpawnTracker();
@@ -55,7 +59,8 @@ public final class PiglinRushPlugin extends JavaPlugin {
         lootInjector = new LootInjector(this, spawnerRegistry);
         diagnosticsService = new DiagnosticsService(this, spawnTracker);
 
-        storageBackend = new H2StorageBackend(this, spawnTracker);
+        PluginConfig.StorageType storageType = pluginConfig.getStorageType();
+        storageBackend = StorageBackendFactory.create(this, spawnTracker, storageType);
         storageBackend.open();
 
         var pm = getServer().getPluginManager();
@@ -74,9 +79,7 @@ public final class PiglinRushPlugin extends JavaPlugin {
             getLogger().info("[PiglinRushPlugin] PlaceholderAPI expansion registered.");
         }
 
-        getLogger().info("zNxPiglinRush v" + getPluginMeta().getVersion()
-                + " enabled" + (schedulerService.isFolia() ? " [Folia]" : "")
-                + " — " + spawnerRegistry.size() + " spawner(s) loaded.");
+        StartupBanner.print(this, spawnerRegistry.size(), storageType, schedulerService.isFolia());
     }
 
     @Override
