@@ -1,36 +1,97 @@
-# MagmaSpawner Configuration
-# Increases Zombified Piglin spawn rate on magma blocks
+# ╔══════════════════════════════════════════════╗
+# ║          zNxPiglinRush  config.yml           ║
+# ║          config-version: 2                   ║
+# ╚══════════════════════════════════════════════╝
 
-# Enable or disable the plugin functionality
+# Internal version — used by the ConfigUpdater to detect and migrate old configs.
+# DO NOT change this manually.
+config-version: 2
+
+# Master switch — disables all spawning without unloading the plugin
 enabled: true
 
-# How many Zombified Piglins to try spawning per trigger event
-# Default vanilla is 1, recommended: 2-4
-spawn-count: 3
-
-# Cooldown in ticks between spawns on the same magma block (20 ticks = 1 second)
-# Lower = more frequent spawns. Default: 20 (1 second)
-spawn-cooldown: 20
-
-# Maximum Zombified Piglins allowed within the scan-radius before blocking a spawn
-# Prevents lag from too many entities in one spot
-max-nearby-entities: 12
-
-# Radius (in blocks) to count nearby entities for the cap above
-scan-radius: 10
-
-# Extra random spawn attempts per trigger (adds more variance/excitement)
-# Set to 0 to disable extra attempts
-extra-attempts: 1
-
-# Worlds where MagmaSpawner is active (leave empty for ALL worlds)
-# Example: [ world_nether, custom_nether ]
+# Worlds where the plugin is active (leave empty = ALL worlds)
 active-worlds: []
 
-# Debug mode: logs spawn attempts to console
+# Debug mode: logs every spawn attempt, cooldown hit and entity cap check
 debug: false
 
-# Update checker: checks Modrinth for new versions on startup
-# Ops receive an in-game notification on join if an update is found
-# Set to false to disable entirely
+# ─────────────────────────────────────────
+# SPAWNER BLOCKS
+# One entry per block type. Each block has its own mob, rates, wave mode
+# and custom drops. Add as many blocks as you like.
+# ─────────────────────────────────────────
+spawners:
+
+  magma_block:
+    mob: ZOMBIFIED_PIGLIN
+    # Total mobs to attempt per trigger (vanilla spawns 1; this adds N-1 extra)
+    spawn-count: 3
+    # Minimum ticks between spawns on the same block (20 ticks = 1 second)
+    spawn-cooldown: 20
+    # Entity cap — no more spawns if this many mobs are within scan-radius
+    max-nearby-entities: 12
+    # Radius (blocks) for the entity cap scan
+    scan-radius: 10
+    # Random bonus attempts per trigger for variance
+    extra-attempts: 1
+    # Wave mode: accumulate triggers, fire a scaled burst every wave-cooldown ticks
+    wave-mode: false
+    wave-size: 5
+    wave-cooldown: 100
+    # Custom drops injected on death (on top of vanilla loot)
+    custom-drops:
+      - material: GOLD_NUGGET
+        min: 1
+        max: 3
+        chance: 0.3
+      - material: GOLDEN_SWORD
+        min: 1
+        max: 1
+        chance: 0.05
+
+  # ── Additional spawner examples (uncomment to enable) ──────────────────────
+
+  # soul_sand:
+  #   mob: WITHER_SKELETON
+  #   spawn-count: 2
+  #   spawn-cooldown: 40
+  #   max-nearby-entities: 8
+  #   scan-radius: 8
+  #   extra-attempts: 0
+  #   wave-mode: false
+  #   wave-size: 3
+  #   wave-cooldown: 200
+  #   custom-drops:
+  #     - material: BLAZE_ROD
+  #       min: 1
+  #       max: 2
+  #       chance: 0.15
+
+  # netherrack:
+  #   mob: MAGMA_CUBE
+  #   spawn-count: 2
+  #   spawn-cooldown: 30
+  #   max-nearby-entities: 10
+  #   scan-radius: 8
+  #   extra-attempts: 1
+  #   wave-mode: true
+  #   wave-size: 6
+  #   wave-cooldown: 80
+  #   custom-drops: []
+
+# ─────────────────────────────────────────
+# DIAGNOSTICS
+# TPS monitoring and performance alerts
+# ─────────────────────────────────────────
+diagnostics:
+  # TPS level that triggers a warning to online ops
+  tps-alert-threshold: 18.0
+  # Minimum seconds between repeated alerts (avoids spam)
+  alert-cooldown-seconds: 300
+  cap-saturation-alert-percent: 80
+
+# ─────────────────────────────────────────
+# UPDATE CHECKER
+# ─────────────────────────────────────────
 update-checker: true

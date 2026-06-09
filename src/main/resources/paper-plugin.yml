@@ -1,8 +1,15 @@
 name: zNxPiglinRush
 version: '${project.version}'
-main: dev.znxki.zNxPiglinRush.ZNxPiglinRush
+main: dev.znxki.zNxPiglinRush.PiglinRushPlugin
 api-version: '26.1.2'
 folia-supported: true
-description: Increases Zombified Piglin spawn rate on magma blocks for gold farms
+description: Multi-block Nether spawner framework
 authors:
   - zNxki_
+website: https://github.com/zNxki/zNxPiglinRush
+
+dependencies:
+  server:
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
